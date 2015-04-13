@@ -7,13 +7,15 @@ import java.util.Scanner;
 
 
 public class Back_Propagation {
-	static int n,m,l;
-	static ArrayList<float []>X = new ArrayList<float[]>();
-	static ArrayList<float []>Y = new ArrayList<float[]>();
+	static int n,m;
+	static ArrayList<float []>XX = new ArrayList<float[]>();
+	static ArrayList<float []>YY = new ArrayList<float[]>();
 	static Matrix WHI ;
 	static Matrix WOH ;
-	
-	
+	// etta && gamma
+	static float learningRate = .1f;
+	static float gamma = 0;
+	static int l = 4;
 
 	public static void readFile() throws FileNotFoundException
 	{
@@ -23,7 +25,7 @@ public class Back_Propagation {
 		int k;
 		
 		m = sc.nextInt();
-		l = sc.nextInt();
+		
 		n = sc.nextInt();
 		k = sc.nextInt();
 
@@ -42,11 +44,10 @@ public class Back_Propagation {
 				y[j] = sc.nextFloat();
 			}
 			
-			X.add(x);
-			Y.add(y);
+			XX.add(x);
+			YY.add(y);
 			
-		}
-		
+		}	
 		
 	}
 	
@@ -67,22 +68,13 @@ public class Back_Propagation {
 		
 	}
 	//////////////////////////////////////////////////////////////////////
-	public static void back_probagate_train()
+	public static float back_probagate_train(ArrayList<float []>X ,ArrayList<float []>Y)
 	{
-		try {
-			readFile();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		float learningRate = 0.2f;
 		float totalMSE = 1;
+		
 		// train and update for 500 trial or MES < 0.01
 		
-		for(int i=0;i<1000 && totalMSE > 0.01f;i++)
-		{
-			totalMSE = 0;
 			float MSE = 0;
 			for (int j = 0; j < X.size(); j++) {
 				float []I = null;
@@ -143,34 +135,15 @@ public class Back_Propagation {
 				}
 				MSE /= 2;
 
-				System.out.println("totalMSE = " + MSE);
+	//			System.out.println("totalMSE = " + MSE);
 				totalMSE += MSE;
 //				System.out.println("totalMSE = " + totalMSE);
 			}
 			
 			totalMSE /= X.size();
-			
-		}
 		
-		
-		// store m l n and WHI then WOH on file weights.txt
-		StringBuilder output = new StringBuilder("");
-		for (int i = 0; i < WHI.rows; i++) {
-			for (int j = 0; j < WHI.columns; j++) {
-				output.append(Float.toString(WHI.array[i][j]) + " ");	
-			}
-			output.append("\n");
-		}
-		
-		for (int i = 0; i < WOH.rows; i++) {
-			for (int j = 0; j < WOH.columns; j++) {
-				output.append(Float.toString(WOH.array[i][j]) + " ");	
-			}
-			output.append("\n");
-		}
-		File f = new File("weights.txt");
-		DealWithFiles.printOnFile(f, output.toString());
-		System.out.println("Total MSE for training = " + totalMSE);
+	//	System.out.println("Total MSE for training = " + totalMSE);
+		return totalMSE;
 	}
 	///////////////////////////////////////
 	// uses weights and calc the error 
@@ -182,19 +155,19 @@ public class Back_Propagation {
 		
 		
 		for (int j = 0; j < I.length; j++) {
-			I[j] = Calculate_segmoid(netH[j], 1);
+			I[j] = Calculate_segmoid(netH[j], gamma);
 		}
 		
 		float []netO = Matrix.Multiplication(WOH, I);
 		
 		for (int j = 0; j < output.length; j++) {
-			output[j] = Calculate_segmoid(netO[j], 1);
+			output[j] = Calculate_segmoid(netO[j], gamma);
 		}
 		
 		return output;
 	}
 	
-	
+	/////////////////////////////////////////////
 	
 	
 	private static float Calculate_segmoid(float x, float gamma){
@@ -212,42 +185,8 @@ public class Back_Propagation {
 	
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////
-	
-	public static float feedForward ()
+	public static float feedForward (ArrayList<float []>X ,ArrayList<float []>Y)
 	{
-		try {
-			readFile();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		FileReader train = null;
-		try {
-			train = new FileReader("weights.txt");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		BufferedReader trainbuf = new BufferedReader(train);
-		Scanner sc = new Scanner(train);
-		WHI = new Matrix(l, m);
-		WOH = new Matrix(n, l);
-		
-		for (int i = 0; i < WHI.rows; i++) {
-			for (int j = 0; j < WHI.columns; j++) {
-				WHI.array[i][j] = sc.nextFloat();
-			}
-			
-		}
-		
-		for (int i = 0; i < WOH.rows; i++) {
-			for (int j = 0; j < WOH.columns; j++) {
-				WOH.array[i][j] = sc.nextFloat();	
-			}
-			
-		}
-		
 		float totalMSE = 0;
 		float MSE = 0;
 		for (int j = 0; j < X.size(); j++) {
@@ -277,5 +216,70 @@ public class Back_Propagation {
 		return totalMSE/= X.size();
 		
 	}
+	/////////////////////////////////
+//	public static float feedForward ()
+//	{
+//		try {
+//			readFile();
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		FileReader train = null;
+//		try {
+//			train = new FileReader("weights.txt");
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		BufferedReader trainbuf = new BufferedReader(train);
+//		Scanner sc = new Scanner(train);
+//		WHI = new Matrix(l, m);
+//		WOH = new Matrix(n, l);
+//		
+//		for (int i = 0; i < WHI.rows; i++) {
+//			for (int j = 0; j < WHI.columns; j++) {
+//				WHI.array[i][j] = sc.nextFloat();
+//			}
+//			
+//		}
+//		
+//		for (int i = 0; i < WOH.rows; i++) {
+//			for (int j = 0; j < WOH.columns; j++) {
+//				WOH.array[i][j] = sc.nextFloat();	
+//			}
+//			
+//		}
+//		
+//		float totalMSE = 0;
+//		float MSE = 0;
+//		for (int j = 0; j < X.size(); j++) {
+//			float []I = null;
+//			I = new float[l];
+//			float []x = X.get(j);
+//			float []O = calculateOutput(x, I);
+//			float []y = Y.get(j);
+//			float []segmaK = new float [O.length];
+//		       
+//			for (int k = 0; k < segmaK.length; k++) {
+//				segmaK [k] = y[k] - O[k];	
+//			}
+//			
+//			MSE = 0;
+//			
+//			for (int k = 0; k < segmaK.length; k++) {
+//				MSE += (segmaK[k] * segmaK[k]);
+//			}
+//			MSE /= 2;
+//			
+//			totalMSE += MSE;
+//			
+//		
+//		}
+//		
+//		return totalMSE/= X.size();
+//		
+//	}
 	
 }

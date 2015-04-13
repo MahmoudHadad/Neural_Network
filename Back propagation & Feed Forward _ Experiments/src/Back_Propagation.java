@@ -13,9 +13,9 @@ public class Back_Propagation {
 	static Matrix WHI ;
 	static Matrix WOH ;
 	// etta && gamma
-	static float learningRate = .1f;
-	static float gamma = 0;
-	static int l = 4;
+	static float learningRate = 0.1f;
+	static float gamma = 0.5f;
+	static int l = 14;
 
 	public static void readFile() throws FileNotFoundException
 	{
@@ -74,7 +74,10 @@ public class Back_Propagation {
 		float totalMSE = 1;
 		
 		// train and update for 500 trial or MES < 0.01
-		
+		int i = 0;
+		for ( i = 0; i < 1000 && totalMSE>0.001; i++) {
+			totalMSE = 0;
+			
 			float MSE = 0;
 			for (int j = 0; j < X.size(); j++) {
 				float []I = null;
@@ -141,7 +144,8 @@ public class Back_Propagation {
 			}
 			
 			totalMSE /= X.size();
-		
+		}
+		System.out.println(i);
 	//	System.out.println("Total MSE for training = " + totalMSE);
 		return totalMSE;
 	}

@@ -53,8 +53,8 @@ public class Main {
 			totalTrainError += Back_Propagation.back_probagate_train(XTrain, YTrain);
 			totalTestError += Back_Propagation.feedForward(XTest, YTest);
 			
-			System.out.println("total train error = " + totalTrainError);
-			System.out.println("total test error = " + totalTestError);
+		//	System.out.println("total train error = " + totalTrainError);
+	//		System.out.println("total test error = " + totalTestError);
 			
 		}
 		
